@@ -1,0 +1,43 @@
+---
+- hosts: dev
+  become: yes
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: present 
+ 
+    - name: started service 
+      service: 
+         name: httpd
+         state: started  
+--- 
+
+#blockfile 
+- name: using blocks
+  hosts: dev
+  tasks:
+    - name: doing blockfile
+      block:
+        - name: remove file
+          command: rm blockfile
+      rescue:
+        - name: create file
+          command: touch blockfile
+      always:
+        - name: print msg
+          command: echo "this is the blockfile" 
+
+#register 
+---
+- name: this is register
+  hosts: dev
+  tasks:
+  - name: this is the loop
+    shell: cat /etc/passwd
+    register: checking_the_user
+  - name: this is the output
+    debug:
+      msg: echo "user containes itachi"
+    when: checking_the_user.stdout.find('itachi') != -1
+
